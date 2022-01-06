@@ -1,5 +1,3 @@
-import tkinter.font
-
 COLORS = {
     "dark_grey": "#2B2B2B",
     "white": "#FFFFFF",
@@ -7,7 +5,7 @@ COLORS = {
     "darker_grey": "#242424",
 }
 
-MASTER_FONT = "helvetica"
+MASTER_FONT = "Helvetica"
 
 FONT_SIZES = {
     "input_font_size": 12,
@@ -33,6 +31,6 @@ FONT_STYLES = {
     ),
 }
 
-BACKGROUND_COLOR = COLORS["dark_grey"]
+BODY_COLOR = COLORS["dark_grey"]
 TEXT_COLOR = COLORS["white"]
 NAV_BAR_COLOR = COLORS["darker_grey"]
