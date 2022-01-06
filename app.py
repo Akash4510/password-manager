@@ -24,7 +24,7 @@ class PasswordManager(Tk):
         self.title("MyPass - PasswordManager")
         self.wm_iconbitmap("Assets/Logo/padlock.ico")
         self.config(bg=BACKGROUND_COLOR)
-        self.call("source", "Assets/Theme/dark_theme.tcl")
+        self.call("source", "Assets/Theme/proxttk-dark.tcl")
 
         # Setting up a default x_padding for the whole application
         self.x_padding = 60
