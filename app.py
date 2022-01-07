@@ -65,10 +65,30 @@ class PasswordManager(Tk):
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky=NSEW)
 
-    def show_window(self, window):
+        self._show_window(LoginWindow)
+
+    def _show_window(self, window):
         """This function will display the window we want."""
         frame = self.frames[window]
         frame.tkraise()
+
+    def show_login_window(self):
+        self._show_window(LoginWindow)
+
+    def show_signup_window(self):
+        self._show_window(SignupWindow)
+
+    def show_otp_window(self):
+        self._show_window(OtpWindow)
+
+    def show_reset_window(self):
+        self._show_window(ResetWindow)
+
+    def show_add_window(self):
+        self._show_window(AddWindow)
+
+    def show_retrieve_window(self):
+        self._show_window(RetrieveWindow)
 
     def run(self):
         self.mainloop()
