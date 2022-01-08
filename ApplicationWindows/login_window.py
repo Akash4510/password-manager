@@ -20,7 +20,7 @@ class LoginWindow(Window):
         )
         self.nav_bar.nav_menu(
             "About",
-            action=lambda: print("About button clicked")
+            action=lambda: self.controller.show_about_window()
         )
 
         # Adding the image

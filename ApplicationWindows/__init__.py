@@ -4,3 +4,4 @@ from ApplicationWindows.otp_window import OtpWindow
 from ApplicationWindows.reset_window import ResetWindow
 from ApplicationWindows.add_window import AddWindow
 from ApplicationWindows.retrieve_window import RetrieveWindow
+from ApplicationWindows.about_window import AboutWindow

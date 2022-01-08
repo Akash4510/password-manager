@@ -19,7 +19,7 @@ class SignupWindow(Window):
         )
         self.nav_bar.nav_menu(
             "About",
-            action=lambda: print("About button clicked")
+            action=lambda: self.controller.show_about_window()
         )
 
         # Adding the image
@@ -74,4 +74,4 @@ class SignupWindow(Window):
             width=18
         )
 
-        self.signup_btn.grid(row=8, column=0, columnspan=2, pady=(40, 0))
+        self.signup_btn.grid(row=8, column=0, columnspan=2, pady=(30, 0))
