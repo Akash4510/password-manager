@@ -125,11 +125,13 @@ class NavigationBar(Frame):
 class Body(Frame):
     """Body of the window."""
 
+    body_height = 550
+
     def __init__(self, parent, **kw):
         super().__init__(parent, **kw)
         self.config(
             bg=BODY_COLOR,
-            height=550,
+            height=self.body_height,
             padx=X_PADDING,
             pady=0,
         )
@@ -137,7 +139,7 @@ class Body(Frame):
         # Adding the left frame or the image frame
         self.left_frame = Frame(
             self,
-            height=550,
+            height=self.body_height,
             bg=BODY_COLOR,
             pady=60
         )
@@ -146,7 +148,7 @@ class Body(Frame):
         # Adding the right frame or the entry frame
         self.right_frame = Frame(
             self,
-            height=550,
+            height=self.body_height,
             bg=BODY_COLOR,
             pady=20
         )
