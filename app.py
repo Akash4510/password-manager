@@ -66,7 +66,7 @@ class PasswordManager(Tk):
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky=NSEW)
 
-        self._show_window(LoginWindow)
+        self.show_login_window()
 
     def _show_window(self, window):
         """This function will display the window we want."""
