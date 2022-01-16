@@ -54,7 +54,9 @@ class PasswordManager(Tk):
         self.about_window_image = PhotoImage(file="Assets/Images/otp_window.png")
 
         # Now we will create a list of all the windows for our application.
-        self.windows = [LoginWindow, SignupWindow, OtpWindow, ResetWindow, AddWindow, RetrieveWindow, AboutWindow]
+        self.windows = [
+            LoginWindow, SignupWindow1, SignupWindow2, OtpWindow, ResetWindow, AddWindow, RetrieveWindow, AboutWindow
+        ]
         self.frames = {}
 
         # All the windows for our application would be a class inherited from the Frame class, which will take two
@@ -76,8 +78,11 @@ class PasswordManager(Tk):
     def show_login_window(self):
         self._show_window(LoginWindow)
 
-    def show_signup_window(self):
-        self._show_window(SignupWindow)
+    def show_signup_window_1(self):
+        self._show_window(SignupWindow1)
+
+    def show_signup_window_2(self):
+        self._show_window(SignupWindow2)
 
     def show_otp_window(self):
         self._show_window(OtpWindow)

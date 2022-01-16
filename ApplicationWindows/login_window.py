@@ -11,7 +11,7 @@ class LoginWindow(Window):
         # Creating the navigation bar menus
         self.nav_bar.nav_menu(
             "SignUp",
-            action=lambda: self.controller.show_signup_window()
+            action=lambda: self.controller.show_signup_window_1()
         )
         self.nav_bar.nav_menu(
             "Login",
