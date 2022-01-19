@@ -1,7 +1,7 @@
 from widgets import *
 
 
-class SignupWindow1(Window):
+class SignupWindow(Window):
 
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
@@ -10,7 +10,7 @@ class SignupWindow1(Window):
         # Creating the navigation bar menus
         self.nav_bar.nav_menu(
             "SignUp",
-            action=lambda: self.controller.show_signup_window_1(),
+            action=lambda: self.controller.show_signup_window_first_page(),
             is_active=True
         )
         self.nav_bar.nav_menu(
@@ -24,6 +24,12 @@ class SignupWindow1(Window):
 
         # Adding the image
         self.add_image(self.controller.signup_window_image)
+
+
+class SignupWindowFirstPage(SignupWindow):
+
+    def __init__(self, parent, controller):
+        super().__init__(parent, controller)
 
         # Variables for storing inputs
         self.first_name = StringVar()
@@ -63,35 +69,16 @@ class SignupWindow1(Window):
             self.entry_frame,
             text="Proceed",
             width=18,
-            command=self.controller.show_signup_window_2
+            command=self.controller.show_signup_window_second_page
         )
 
         self.proceed_btn.grid(row=6, column=0, columnspan=2, pady=(30, 0))
 
 
-class SignupWindow2(Window):
+class SignupWindowSecondPage(SignupWindow):
 
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
-        # Inheriting from the window class
-
-        # Creating the navigation bar menus
-        self.nav_bar.nav_menu(
-            "SignUp",
-            action=lambda: self.controller.show_signup_window_1(),
-            is_active=True
-        )
-        self.nav_bar.nav_menu(
-            "Login",
-            action=lambda: self.controller.show_login_window()
-        )
-        self.nav_bar.nav_menu(
-            "About",
-            action=lambda: self.controller.show_about_window()
-        )
-
-        # Adding the image
-        self.add_image(self.controller.signup_window_image)
 
         # Variables for storing inputs
         self.password = StringVar()

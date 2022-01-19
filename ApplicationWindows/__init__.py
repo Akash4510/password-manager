@@ -1,5 +1,5 @@
 from ApplicationWindows.login_window import LoginWindow
-from ApplicationWindows.signup_window import SignupWindow1, SignupWindow2
+from ApplicationWindows.signup_window import SignupWindowFirstPage, SignupWindowSecondPage
 from ApplicationWindows.otp_window import OtpWindow
 from ApplicationWindows.reset_window import ResetWindow
 from ApplicationWindows.add_window import AddWindow

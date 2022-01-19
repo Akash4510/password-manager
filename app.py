@@ -55,7 +55,14 @@ class PasswordManager(Tk):
 
         # Now we will create a list of all the windows for our application.
         self.windows = [
-            LoginWindow, SignupWindow1, SignupWindow2, OtpWindow, ResetWindow, AddWindow, RetrieveWindow, AboutWindow
+            LoginWindow,
+            SignupWindowFirstPage,
+            SignupWindowSecondPage,
+            OtpWindow,
+            ResetWindow,
+            AddWindow,
+            RetrieveWindow,
+            AboutWindow
         ]
         self.frames = {}
 
@@ -78,11 +85,11 @@ class PasswordManager(Tk):
     def show_login_window(self):
         self._show_window(LoginWindow)
 
-    def show_signup_window_1(self):
-        self._show_window(SignupWindow1)
+    def show_signup_window_first_page(self):
+        self._show_window(SignupWindowFirstPage)
 
-    def show_signup_window_2(self):
-        self._show_window(SignupWindow2)
+    def show_signup_window_second_page(self):
+        self._show_window(SignupWindowSecondPage)
 
     def show_otp_window(self):
         self._show_window(OtpWindow)
