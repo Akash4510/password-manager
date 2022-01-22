@@ -39,7 +39,7 @@ class AddWindow(Window):
         )
         self.website_url_input = InputBox(
             self.entry_frame,
-            label="Website url (optional): ",
+            label="Website URL (optional): ",
             var=self.website_url
         )
         self.username_input = InputBox(
