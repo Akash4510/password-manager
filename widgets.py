@@ -3,9 +3,6 @@ from tkinter import ttk
 from theme import *
 
 
-X_PADDING = 60
-
-
 class MyLabel(ttk.Label):
     """Custom label widget for the application."""
 
@@ -39,16 +36,21 @@ class MyButton(ttk.Button):
         )
 
 
-class InputBox:
+class InputBox(Frame):
     """Input box with a label and a input field"""
 
     def __init__(self, parent, label, var):
+        super().__init__(parent)
+        self.config(bg=BODY_COLOR)
         self.label = MyLabel(
-            parent,
+            self,
             text=label,
             background=BODY_COLOR
         )
-        self.input_box = MyEntry(parent, textvar=var)
+        self.entry = MyEntry(self, textvar=var)
+
+        self.label.grid(row=0, column=0, columnspan=2, pady=(30, 10), sticky=W)
+        self.entry.grid(row=1, column=0, columnspan=2, sticky=W)
 
 
 class NavigationBar(Frame):
@@ -58,18 +60,11 @@ class NavigationBar(Frame):
         super().__init__(parent, **kw)
         self.logo = parent.controller.nav_bar_logo
 
-        self.config(
-            padx=X_PADDING,
-            pady=15,
-            bg=NAV_BAR_COLOR)
+        self.config(pady=15, bg=NAV_BAR_COLOR)
         self.nav_menus = []
 
         # Logo frame
-        self.logo_frame = Frame(
-            self,
-            bg=NAV_BAR_COLOR,
-            padx=0
-        )
+        self.logo_frame = Frame(self, bg=NAV_BAR_COLOR, padx=0)
         self.logo_frame.pack(side=LEFT, anchor=W)
 
         icon_label = MyLabel(
@@ -87,17 +82,15 @@ class NavigationBar(Frame):
         title_label.grid(row=0, column=1)
 
         # Navigation menus frame
-        self.menu_frame = Frame(
-            self,
-            bg=NAV_BAR_COLOR
-        )
+        self.menu_frame = Frame(self, bg=NAV_BAR_COLOR)
         self.menu_frame.pack(side=RIGHT, anchor=E)
 
         # Adding the navigation menus to the navigation bar.
-        self.add_nav_menus()
+        self.place_nav_menus()
 
-    def nav_menu(self, label="NavButton", action=lambda: print("Button clicked."), is_active=False):
+    def add_nav_menu(self, label="NavButton", action=None, is_active=False):
         """Creates a nav menu"""
+
         menu_btn = Button(
             self.menu_frame,
             text=label,
@@ -110,29 +103,53 @@ class NavigationBar(Frame):
             command=action
         )
         self.nav_menus.append(menu_btn)
-        self.add_nav_menus()
+        self.place_nav_menus()
 
-    def add_nav_menus(self):
+    def place_nav_menus(self):
         """Add all the nav menus to the navigation bar"""
         for menu in self.nav_menus:
             menu.grid(row=0, column=self.nav_menus.index(menu), padx=(10, 0))
 
-    def place_on_screen(self):
-        """Displays the navigation bar on the top of the window"""
-        self.pack(side=TOP, fill=X, expand=TRUE, anchor=N)
 
-
-class Body(Frame):
-    """Body of the window."""
-
-    body_height = 550
+class BodyFrame(Frame):
 
     def __init__(self, parent, **kw):
         super().__init__(parent, **kw)
+
+        self.container = Frame(self, bg=BODY_COLOR)
+        self.container.pack(side=TOP, fill=BOTH, expand=TRUE)
+
+        self.container.grid_rowconfigure(index=0, weight=1)
+        self.container.grid_columnconfigure(index=0, weight=1)
+
+        self.windows = []
+        self.children_frames = {}
+
+    def add_children_frames(self):
+        for F in self.windows:
+            frame = F(self.container, self)
+            self.children_frames[F] = frame
+            frame.grid(row=0, column=0, sticky=NSEW)
+
+    def show_frame(self, frame):
+        self.children_frames[frame].tkraise()
+
+
+class Body(Frame):
+
+    def __init__(self, parent, controller, **kw):
+        super().__init__(parent, **kw)
+
+        self.controller = controller
+        self.parent_window = self.controller.master
+        self.root_controller = self.parent_window.controller
+
+        self.body_height = 550
+
         self.config(
             bg=BODY_COLOR,
             height=self.body_height,
-            padx=X_PADDING,
+            padx=60,
             pady=0,
         )
 
@@ -154,40 +171,36 @@ class Body(Frame):
         )
         self.right_frame.pack(side=RIGHT, fill=BOTH, anchor=E)
 
-    def place_on_screen(self):
-        """Displays the body frame on the window"""
-        self.pack(fill=BOTH, expand=True)
-
-
-class Window(Frame):
-    """Main window/page of the application"""
-
-    def __init__(self, parent, controller):
-        Frame.__init__(self, parent)
-        self.controller = controller
-
-        self.nav_bar = NavigationBar(self)
-        self.nav_bar.place_on_screen()
-
-        self.body = Body(self)
-        self.body.place_on_screen()
-
-        self.entry_frame = self.body.right_frame
-
-    def add_image(self, image):
+    def add_image(self, image, parent=None):
         """Adds the image to the left frame"""
-        image_label = Label(self.body.left_frame, image=image, bg=BODY_COLOR)
+        if parent is None:
+            parent = self.left_frame
+        image_label = Label(parent, image=image, bg=BODY_COLOR)
         image_label.grid(row=0, column=0, sticky=W)
 
     @staticmethod
-    def add_inputs(inputs: list[InputBox], row=0, column=0, gap=30):
-        """Adds the input boxes in the entry frame"""
-        for inp in inputs:
-            inp.label.grid(
-                row=row, column=column, columnspan=2, sticky=W,
-                pady=(gap, 10) if inputs.index(inp) != 0 else (0, 10), padx=0
-            )
-            row += 1
+    def add_inputs(input_frames: list[InputBox], from_row=0):
+        for frame in input_frames:
+            frame.grid(row=from_row, column=0, columnspan=2)
+            from_row += 1
 
-            inp.input_box.grid(row=row, column=column, columnspan=2, sticky=W)
-            row += 1
+
+class Window(Frame):
+
+    def __init__(self, parent, controller):
+        super().__init__(parent)
+
+        self.controller = controller
+
+        self.x_padding = 60
+
+        self.nav_bar = NavigationBar(self, padx=self.x_padding)
+        self.nav_bar.pack(side=TOP, fill=X, expand=TRUE, anchor=N)
+
+        self.body = BodyFrame(self)
+        self.body.pack(side=TOP, fill=BOTH, expand=TRUE)
+
+    def add_body_frames(self, *frames):
+        for frame in frames:
+            self.body.windows.append(frame)
+        self.body.add_children_frames()
