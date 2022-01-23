@@ -52,7 +52,7 @@ class PasswordManager(Tk):
 
         # Creating all the image elements
         self.nav_bar_logo = PhotoImage(file="Assets/Logo/nav_bar_logo.png")
-        self.login_window_image = PhotoImage(file="Assets/Images/login_window.png")
+        self.login_window_image = PhotoImage(file="Assets/Images/add_window.png")
         self.signup_window_image = PhotoImage(file="Assets/Images/signup_window.png")
         self.otp_window_image = PhotoImage(file="Assets/Images/otp_window.png")
         self.reset_window_image = PhotoImage(file="Assets/Images/reset_window.png")
@@ -149,6 +149,22 @@ class PasswordManager(Tk):
             messagebox.showerror(
                 title="Login Error",
                 message=f"PLEASE ENTER A VALID EMAIL ADDRESS!"
+            )
+            return
+
+        # Checking if there exists the data and the users folder
+        if "Data" not in os.listdir(os.getcwd()):
+            messagebox.showwarning(
+                title="Login Error",
+                message="THERE ARE NO USERS IN OUR DATABASE.\n"
+                        "PLEASE CREATE AN ACCOUNT BY SIGNING UP, TO USE THE APPLICATION"
+            )
+            return
+        if "Users" not in os.listdir(DATA_FOLDER):
+            messagebox.showwarning(
+                title="Login Error",
+                message="THERE ARE NO USERS IN OUR DATABASE.\n\n"
+                        "PLEASE CREATE AN ACCOUNT BY SIGNING UP, TO USE THE APPLICATION"
             )
             return
 
