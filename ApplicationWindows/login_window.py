@@ -1,4 +1,5 @@
 from widgets import *
+from tkinter import messagebox
 
 
 class LoginWindow(Window):
@@ -10,16 +11,16 @@ class LoginWindow(Window):
         # Creating the navigation bar menus
         self.nav_bar.add_nav_menu(
             "SignUp",
-            action=lambda: self.controller.show_signup_window(),
+            action=lambda: self.controller.show_window("SignupWindow"),
         )
         self.nav_bar.add_nav_menu(
             "Login",
-            action=lambda: self.controller.show_login_window(),
+            action=lambda: self.controller.show_window("LoginWindow"),
             is_active=True
         )
         self.nav_bar.add_nav_menu(
             "About",
-            action=lambda: self.controller.show_about_window(),
+            action=lambda: self.controller.show_window("AboutWindow"),
         )
 
         # Variables to store inputs
@@ -30,6 +31,27 @@ class LoginWindow(Window):
         self.add_body_frames(PageOne)
 
         self.body.show_frame(PageOne)
+
+    def login_to_account(self):
+        """Log in to the account"""
+
+        # Getting the entered email and password
+        email = self.email.get()
+        password = self.password.get()
+
+        if email.strip() == "" or password.strip() == "":
+            messagebox.showerror(
+                title="Login Error",
+                message=f"FIELDS CANNOT BE EMPTY!"
+            )
+            return
+
+        # Logging in the user
+        self.controller.login_to_account(email, password)
+
+        # Resetting all the input fields to empty
+        self.email.set("")
+        self.password.set("")
 
 
 class PageOne(Body):
@@ -65,11 +87,14 @@ class PageOne(Body):
         self.login_btn = MyButton(
             self.right_frame,
             text="Login",
-            command=lambda: print("Login button clicked!")
+            command=lambda: self.parent_window.login_to_account()
         )
         self.login_btn.grid(row=3, column=0, columnspan=2, pady=(30, 0))
 
         self.right_frame.config(pady=80)
+
+        self.email_input.entry.bind("<Return>", lambda e: self.password_input.entry.focus_set())
+        self.password_input.entry.bind("<Return>", lambda e: self.parent_window.login_to_account())
 
     def toggle_password_visibility(self):
         """Toggles the visibility of the password input"""

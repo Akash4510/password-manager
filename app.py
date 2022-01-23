@@ -1,7 +1,14 @@
+import os
+import os.path
+import json
 from tkinter import *
-from tkinter import ttk
+from tkinter import ttk, messagebox
 from theme import *
 from ApplicationWindows import *
+from functions import *
+
+DATA_FOLDER = os.path.join(os.getcwd(), "Data")
+USERS_FOLDER = os.path.join(DATA_FOLDER, "Users")
 
 
 class PasswordManager(Tk):
@@ -63,24 +70,120 @@ class PasswordManager(Tk):
         for F in self.windows:
             frame = F(container, self)
             # In the above line we passed parent as the container and self as the controller.
-            self.frames[F] = frame
+            self.frames[F.__name__] = frame
             frame.grid(row=0, column=0, sticky=NSEW)
 
-        self.show_login_window()
+        self.show_window("LoginWindow")
 
-    def _show_window(self, window):
+    def show_window(self, window):
         """This function will display the window we want."""
         frame = self.frames[window]
         frame.tkraise()
 
-    def show_login_window(self):
-        self._show_window(LoginWindow)
+    @staticmethod
+    def create_new_account(first_name: str, last_name: str, email: str, password: str):
+        """Creates a new user account"""
 
-    def show_signup_window(self):
-        self._show_window(SignupWindow)
+        # If the user is using the application for the first time, we will make sure all the data folder exists
+        if "Data" not in os.listdir(os.getcwd()):
+            os.mkdir(DATA_FOLDER)
+            os.mkdir(USERS_FOLDER)
 
-    def show_about_window(self):
-        self._show_window(AboutWindow)
+        if "Users" not in os.listdir(DATA_FOLDER):
+            os.mkdir(USERS_FOLDER)
+
+        # If the user already exists we will display the message and return from the function
+        if email in os.listdir(USERS_FOLDER):
+            messagebox.showinfo(
+                title="USER ALREADY EXISTS!",
+                message=f"THE USER :  '{email}'  IS ALREADY REGISTERED\n\n"
+                        f"GO TO THE LOGIN PAGE TO LOGIN TO YOUR ACCOUNT."
+            )
+            return
+        # Else we will make the new folder for the user
+        else:
+            os.mkdir(f"{USERS_FOLDER}/{email}")
+
+        # Path for the key file and the data file for the user.
+        key_file_path = os.path.join(USERS_FOLDER, email, f"{email}.key")
+        data_file_path = os.path.join(USERS_FOLDER, email, f"{email}.json")
+
+        # Generating the new key for the user
+        user_key = generate_new_key()
+
+        # Adding the key into the key file of the user
+        with open(key_file_path, "wb") as key_file:
+            key_file.write(user_key)
+
+        # Encrypting the master password of the user
+        encrypted_master_password = encrypt_password(password, user_key)
+
+        new_data = {
+            "user_details": {
+                "first_name": first_name.title(),
+                "last_name": last_name.title(),
+                "name": f"{first_name} {last_name}".title(),
+                "email": email,
+                "master_password": encrypted_master_password,
+            }
+        }
+
+        # Adding the new data into the data file of the user
+        with open(data_file_path, "w") as data_file:
+            json.dump(new_data, data_file, indent=4)
+
+        # Displaying the success message to the user.
+        messagebox.showinfo(
+            title="Sign Up Successful",
+            message=("YOUR ACCOUNT HAS BEEN CREATED SUCCESSFULLY.\n\n\n"
+                     "YOU MUST REMEMBER YOUR MASTER PASSWORD YOU JUST CREATED TO LOGIN TO YOUR ACCOUNT. "
+                     "IN CASE YOU FORGET IT, YOU CANNOT RETRIEVE YOUR PASSWORDS")
+        )
+
+    @staticmethod
+    def login_to_account(email, password):
+        """Login to the user's account"""
+
+        # Checking if the user entered a valid email address
+        if not valid_email(email):
+            messagebox.showerror(
+                title="Login Error",
+                message=f"PLEASE ENTER A VALID EMAIL ADDRESS!"
+            )
+            return
+
+        # Checking if the user is a registered user.
+        if email.lower() not in os.listdir(USERS_FOLDER):
+            messagebox.showerror(
+                title="Login Error",
+                message=f"THE USER : '{email}' DOES NOT EXISTS. PLEASE SIGNUP TO CREATE AN ACCOUNT!"
+            )
+            return
+
+        # Path for the key file and the data file for the user.
+        key_file_path = os.path.join(USERS_FOLDER, email, f"{email}.key")
+        data_file_path = os.path.join(USERS_FOLDER, email, f"{email}.json")
+
+        # Getting the actual master password and the key of the user
+        with open(data_file_path, "r") as data_file:
+            users_data = json.load(data_file)
+            encrypted_password = users_data["user_details"]["master_password"]
+
+        with open(key_file_path, "rb") as key_file:
+            user_key = key_file.read()
+
+        # Decrypting the actual password
+        actual_password = decrypt_password(encrypted_password, user_key)
+
+        # Checking if the user entered the correct password
+        if password != actual_password:
+            messagebox.showerror(
+                title="Login Error",
+                message=f"INVALID PASSWORD FOR THE USER : {email}!"
+            )
+            return
+
+        print("Success")
 
     def run(self):
         self.mainloop()
