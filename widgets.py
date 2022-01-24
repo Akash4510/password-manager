@@ -165,7 +165,7 @@ class Body(Frame):
 
 
 class TwoColumnBody(Body):
-    """Body of the window"""
+    """Two column page/body for the window"""
 
     def __init__(self, parent, controller, **kw):
         super().__init__(parent, controller, **kw)
@@ -197,7 +197,10 @@ class TwoColumnBody(Body):
 
 
 class SingleColumnBody(Body):
-    ...
+    """Single column page/body for the window"""
+
+    def __init__(self, parent, controller, **kw):
+        super().__init__(parent, controller, **kw)
 
 
 class Window(Frame):
