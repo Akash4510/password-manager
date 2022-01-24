@@ -30,7 +30,7 @@ class LoginWindow(Window):
         # Adding the page to the body
         self.add_body_frames(PageOne)
 
-        self.body.show_frame(PageOne)
+        self.show_page(PageOne)
 
     def login_to_account(self):
         """Log in to the account"""
@@ -54,7 +54,7 @@ class LoginWindow(Window):
         self.password.set("")
 
 
-class PageOne(Body):
+class PageOne(TwoColumnBody):
 
     def __init__(self, parent, controller):
         super().__init__(parent, controller)

@@ -10,15 +10,15 @@ class AboutWindow(Window):
         # Creating the navigation bar menus
         self.nav_bar.add_nav_menu(
             "SignUp",
-            action=lambda: self.controller.show_signup_window(),
+            action=lambda: self.controller.show_window("SignupWindow")
         )
         self.nav_bar.add_nav_menu(
             "Login",
-            action=lambda: self.controller.show_login_window(),
+            action=lambda: self.controller.show_window("LoginWindow")
         )
         self.nav_bar.add_nav_menu(
             "About",
-            action=lambda: self.controller.show_about_window(),
+            action=lambda: self.controller.show_window("AboutWindow"),
             is_active=True
         )
 
@@ -28,7 +28,7 @@ class AboutWindow(Window):
         self.body.show_frame(PageOne)
 
 
-class PageOne(Body):
+class PageOne(TwoColumnBody):
 
     def __init__(self, parent, controller):
         super().__init__(parent, controller)

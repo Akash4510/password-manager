@@ -61,7 +61,7 @@ class PasswordManager(Tk):
         self.about_window_image = PhotoImage(file="Assets/Images/otp_window.png")
 
         # Now we will create a list of all the windows for our application.
-        self.windows = [LoginWindow, SignupWindow, AboutWindow]
+        self.windows = [LoginWindow, SignupWindow, AboutWindow, AddWindow]
         self.frames = {}
 
         # All the windows for our application would be a class inherited from the Frame class, which will take two
@@ -73,6 +73,8 @@ class PasswordManager(Tk):
             self.frames[F.__name__] = frame
             frame.grid(row=0, column=0, sticky=NSEW)
 
+        self.frames["LoginWindow"].email.set("test@email.com")
+        self.frames["LoginWindow"].password.set("Test@1234")
         self.show_window("LoginWindow")
 
     def show_window(self, window):
@@ -140,8 +142,7 @@ class PasswordManager(Tk):
                      "IN CASE YOU FORGET IT, YOU CANNOT RETRIEVE YOUR PASSWORDS")
         )
 
-    @staticmethod
-    def login_to_account(email, password):
+    def login_to_account(self, email, password):
         """Login to the user's account"""
 
         # Checking if the user entered a valid email address
@@ -159,6 +160,7 @@ class PasswordManager(Tk):
                 message="THERE ARE NO USERS IN OUR DATABASE.\n"
                         "PLEASE CREATE AN ACCOUNT BY SIGNING UP, TO USE THE APPLICATION"
             )
+            self.show_window("SignupWindow")
             return
         if "Users" not in os.listdir(DATA_FOLDER):
             messagebox.showwarning(
@@ -166,6 +168,7 @@ class PasswordManager(Tk):
                 message="THERE ARE NO USERS IN OUR DATABASE.\n\n"
                         "PLEASE CREATE AN ACCOUNT BY SIGNING UP, TO USE THE APPLICATION"
             )
+            self.show_window("SignupWindow")
             return
 
         # Checking if the user is a registered user.
@@ -199,7 +202,13 @@ class PasswordManager(Tk):
             )
             return
 
-        print("Success")
+        # If everything is correct login to the user's account
+        self.show_window("AddWindow")
+
+    def logout_of_the_account(self):
+        """Logs the user out of the account"""
+        self.show_window("LoginWindow")
+        self.frames["LoginWindow"].pages[1].entries[0].focus_set()
 
     def run(self):
         self.mainloop()

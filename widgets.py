@@ -139,7 +139,6 @@ class BodyFrame(Frame):
 
 
 class Body(Frame):
-    """Body of the window"""
 
     def __init__(self, parent, controller, **kw):
         super().__init__(parent, **kw)
@@ -156,6 +155,20 @@ class Body(Frame):
             padx=60,
             pady=0,
         )
+
+    @staticmethod
+    def add_inputs(input_frames: list[InputBox], from_row=0):
+        """Adds all the inputs in the body"""
+        for frame in input_frames:
+            frame.grid(row=from_row, column=0, columnspan=2)
+            from_row += 1
+
+
+class TwoColumnBody(Body):
+    """Body of the window"""
+
+    def __init__(self, parent, controller, **kw):
+        super().__init__(parent, controller, **kw)
 
         # Adding the left frame or the image frame
         self.left_frame = Frame(
@@ -176,18 +189,15 @@ class Body(Frame):
         self.right_frame.pack(side=RIGHT, fill=BOTH, anchor=E)
 
     def add_image(self, image, parent=None):
-        """Adds the image to the left frame"""
+        """Adds the image to the left frame by default otherwise in the parent"""
         if parent is None:
             parent = self.left_frame
         image_label = Label(parent, image=image, bg=BODY_COLOR)
         image_label.grid(row=0, column=0, sticky=W)
 
-    @staticmethod
-    def add_inputs(input_frames: list[InputBox], from_row=0):
-        """Adds all the inputs in the body"""
-        for frame in input_frames:
-            frame.grid(row=from_row, column=0, columnspan=2)
-            from_row += 1
+
+class SingleColumnBody(Body):
+    ...
 
 
 class Window(Frame):
@@ -211,3 +221,7 @@ class Window(Frame):
         for frame in frames:
             self.body.windows.append(frame)
         self.body.add_children_frames()
+
+    def show_page(self, page):
+        """Displays the given page"""
+        self.body.show_frame(page)

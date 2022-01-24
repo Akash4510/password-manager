@@ -68,11 +68,11 @@ class SignupWindow(Window):
         self.password.set("")
         self.confirm_password.set("")
 
-        self.body.show_frame(PageOne)
+        self.show_page(PageOne)
         self.controller.show_window("LoginWindow")
 
 
-class PageOne(Body):
+class PageOne(TwoColumnBody):
 
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
@@ -124,10 +124,10 @@ class PageOne(Body):
             )
             return
 
-        self.controller.show_frame(PageTwo)
+        self.parent_window.show_page(PageTwo)
 
 
-class PageTwo(Body):
+class PageTwo(TwoColumnBody):
 
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
