@@ -51,6 +51,7 @@ class PasswordManager(Tk):
         container.grid_columnconfigure(index=0, weight=1)
 
         # Creating all the image elements
+        self.lock_icon = PhotoImage(file="Assets/Images/lock.png")
         self.nav_bar_logo = PhotoImage(file="Assets/Logo/nav_bar_logo.png")
         self.login_window_image = PhotoImage(file="Assets/Images/add_window.png")
         self.signup_window_image = PhotoImage(file="Assets/Images/signup_window.png")
@@ -204,11 +205,11 @@ class PasswordManager(Tk):
 
         # If everything is correct login to the user's account
         self.show_window("AddWindow")
+        self.frames["AddWindow"].username.set(email)
 
     def logout_of_the_account(self):
         """Logs the user out of the account"""
         self.show_window("LoginWindow")
-        self.frames["LoginWindow"].pages[1].entries[0].focus_set()
 
     def run(self):
         self.mainloop()

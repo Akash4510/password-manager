@@ -79,17 +79,17 @@ class PageOne(TwoColumnBody):
 
         self.add_image(self.root_controller.signup_window_image)
 
-        self.first_name_input = InputBox(
+        self.first_name_input = TwoRowsInputBox(
             self.right_frame,
             label="Enter your first name: ",
             var=self.parent_window.first_name
         )
-        self.last_name_input = InputBox(
+        self.last_name_input = TwoRowsInputBox(
             self.right_frame,
             label="Enter your last name: ",
             var=self.parent_window.last_name
         )
-        self.email_input = InputBox(
+        self.email_input = TwoRowsInputBox(
             self.right_frame,
             label="Enter your email: ",
             var=self.parent_window.email
@@ -134,12 +134,12 @@ class PageTwo(TwoColumnBody):
 
         self.add_image(self.root_controller.signup_window_image)
 
-        self.password_input = InputBox(
+        self.password_input = TwoRowsInputBox(
             self.right_frame,
             label="Create a password: ",
             var=self.parent_window.password
         )
-        self.cnf_pass_input = InputBox(
+        self.cnf_pass_input = TwoRowsInputBox(
             self.right_frame,
             label="Confirm password: ",
             var=self.parent_window.confirm_password

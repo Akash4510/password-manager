@@ -36,7 +36,7 @@ class MyButton(ttk.Button):
         )
 
 
-class InputBox(Frame):
+class TwoRowsInputBox(Frame):
     """Input box with a label and a input field"""
 
     def __init__(self, parent, label, var):
@@ -51,6 +51,23 @@ class InputBox(Frame):
 
         self.label.grid(row=0, column=0, columnspan=2, pady=(30, 10), sticky=W)
         self.entry.grid(row=1, column=0, columnspan=2, sticky=W)
+
+
+class SingleRowInputBox(Frame):
+    """Input box with a label and a input field"""
+
+    def __init__(self, parent, label, var):
+        super().__init__(parent)
+        self.config(bg=BODY_COLOR)
+        self.label = MyLabel(
+            self,
+            text=label,
+            background=BODY_COLOR
+        )
+        self.entry = MyEntry(self, textvar=var)
+
+        self.label.grid(row=0, column=0, columnspan=1, pady=(10, 10), sticky=W)
+        self.entry.grid(row=0, column=1, columnspan=1, pady=(10, 10), padx=(15, 0))
 
 
 class NavigationBar(Frame):
@@ -157,7 +174,7 @@ class Body(Frame):
         )
 
     @staticmethod
-    def add_inputs(input_frames: list[InputBox], from_row=0):
+    def add_inputs(input_frames: list[TwoRowsInputBox], from_row=0):
         """Adds all the inputs in the body"""
         for frame in input_frames:
             frame.grid(row=from_row, column=0, columnspan=2)
@@ -201,6 +218,13 @@ class SingleColumnBody(Body):
 
     def __init__(self, parent, controller, **kw):
         super().__init__(parent, controller, **kw)
+
+    @staticmethod
+    def add_inputs(input_frames: list[SingleRowInputBox], from_row=0):
+        """Adds all the inputs in the body"""
+        for frame in input_frames:
+            frame.grid(row=from_row, column=0, columnspan=2, sticky=W)
+            from_row += 1
 
 
 class Window(Frame):

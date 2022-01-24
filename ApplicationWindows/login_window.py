@@ -61,12 +61,12 @@ class PageOne(TwoColumnBody):
 
         self.add_image(self.root_controller.login_window_image)
 
-        self.email_input = InputBox(
+        self.email_input = TwoRowsInputBox(
             self.right_frame,
             label="Enter your email: ",
             var=self.parent_window.email
         )
-        self.password_input = InputBox(
+        self.password_input = TwoRowsInputBox(
             self.right_frame,
             label="Enter your password: ",
             var=self.parent_window.password
