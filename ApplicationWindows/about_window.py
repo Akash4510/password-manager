@@ -23,7 +23,7 @@ class AboutWindow(Window):
         )
 
         # Adding the page to the body
-        self.add_body_frames(PageOne)
+        self.add_pages(PageOne)
 
         self.body.show_frame(PageOne)
 

@@ -216,7 +216,7 @@ class Window(Frame):
         self.body = BodyFrame(self)
         self.body.pack(side=TOP, fill=BOTH, expand=TRUE)
 
-    def add_body_frames(self, *frames):
+    def add_pages(self, *frames):
         """Adds different bodies/pages of a window in the body frame of the window"""
         for frame in frames:
             self.body.windows.append(frame)

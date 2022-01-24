@@ -28,7 +28,7 @@ class LoginWindow(Window):
         self.password = StringVar()
 
         # Adding the page to the body
-        self.add_body_frames(PageOne)
+        self.add_pages(PageOne)
 
         self.show_page(PageOne)
 

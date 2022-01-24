@@ -21,6 +21,8 @@ class AddWindow(Window):
             action=lambda: self.logout(),
         )
 
+        self.add_pages(PageOne)
+
     def logout(self):
         """Logout the user"""
 
@@ -33,3 +35,7 @@ class AddWindow(Window):
         # If the user confirmed logout, then log him out of the account
         if user_response:
             self.controller.show_window("LoginWindow")
+
+
+class PageOne(SingleColumnBody):
+    ...
