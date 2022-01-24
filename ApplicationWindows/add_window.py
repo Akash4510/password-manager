@@ -22,6 +22,8 @@ class AddWindow(Window):
             action=lambda: self.logout(),
         )
 
+        self.logged_in_account = StringVar()
+
         self.website_name = StringVar()
         self.website_url = StringVar()
         self.username = StringVar()
@@ -94,7 +96,7 @@ class PageOne(SingleColumnBody):
         self.add_btn = MyButton(
             self,
             text="Save Password",
-            command=lambda: print("Save button clicked."),
+            command=lambda: self.save_password(),
         )
         self.add_btn.grid(row=5, column=0, columnspan=2, pady=(15, 0))
         self.add_btn.config(width=20)
@@ -103,3 +105,29 @@ class PageOne(SingleColumnBody):
         """Shows a random password"""
         random_password = generate_password()
         self.parent_window.password.set(random_password)
+
+    def save_password(self):
+        """Saves the password"""
+
+        user_email = self.parent_window.logged_in_account.get()
+        web_name = self.parent_window.website_name.get()
+        web_url = self.parent_window.website_url.get()
+        username = self.parent_window.username.get()
+        password = self.parent_window.password.get()
+
+        if web_name.strip() == "" or username.strip() == "" or password.strip() == "":
+            messagebox.showerror(
+                title="Error!",
+                message="FIELDS CANNOT BE EMPTY!"
+            )
+            return
+
+        self.root_controller.add_new_password(
+            for_user=user_email, web_name=web_name, web_url=web_url, username=username, password=password
+        )
+
+        if self.root_controller.password_saved_successfully:
+            self.parent_window.website_name.set("")
+            self.parent_window.website_url.set("")
+            self.parent_window.username.set(user_email)
+            self.parent_window.password.set("")

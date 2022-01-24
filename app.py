@@ -61,6 +61,8 @@ class PasswordManager(Tk):
         self.retrieve_window_image = PhotoImage(file="Assets/Images/retrieve_window.png")
         self.about_window_image = PhotoImage(file="Assets/Images/otp_window.png")
 
+        self.password_saved_successfully = False
+
         # Now we will create a list of all the windows for our application.
         self.windows = [LoginWindow, SignupWindow, AboutWindow, AddWindow]
         self.frames = {}
@@ -74,8 +76,8 @@ class PasswordManager(Tk):
             self.frames[F.__name__] = frame
             frame.grid(row=0, column=0, sticky=NSEW)
 
-        self.frames["LoginWindow"].email.set("test@email.com")
-        self.frames["LoginWindow"].password.set("Test@1234")
+        self.frames["LoginWindow"].email.set("akash@email.com")
+        self.frames["LoginWindow"].password.set("Akash@1234")
         self.show_window("LoginWindow")
 
     def show_window(self, window):
@@ -108,8 +110,8 @@ class PasswordManager(Tk):
             os.mkdir(f"{USERS_FOLDER}/{email}")
 
         # Path for the key file and the data file for the user.
-        key_file_path = os.path.join(USERS_FOLDER, email, f"{email}.key")
-        data_file_path = os.path.join(USERS_FOLDER, email, f"{email}.json")
+        key_file_path = os.path.join(USERS_FOLDER, email, f"user_key.key")
+        data_file_path = os.path.join(USERS_FOLDER, email, f"user_data.json")
 
         # Generating the new key for the user
         user_key = generate_new_key()
@@ -181,8 +183,8 @@ class PasswordManager(Tk):
             return
 
         # Path for the key file and the data file for the user.
-        key_file_path = os.path.join(USERS_FOLDER, email, f"{email}.key")
-        data_file_path = os.path.join(USERS_FOLDER, email, f"{email}.json")
+        key_file_path = os.path.join(USERS_FOLDER, email, f"user_key.key")
+        data_file_path = os.path.join(USERS_FOLDER, email, f"user_data.json")
 
         # Getting the actual master password and the key of the user
         with open(data_file_path, "r") as data_file:
@@ -205,11 +207,103 @@ class PasswordManager(Tk):
 
         # If everything is correct login to the user's account
         self.show_window("AddWindow")
+        self.frames["AddWindow"].logged_in_account.set(email)
         self.frames["AddWindow"].username.set(email)
 
     def logout_of_the_account(self):
         """Logs the user out of the account"""
         self.show_window("LoginWindow")
+
+    def add_new_password(self, for_user: str, web_name: str, web_url: str, username: str, password: str):
+        """Saves a new password in the user's account"""
+
+        if web_name.strip() == "" or username.strip() == "" or password.strip() == "":
+            messagebox.showerror(
+                title="Error!",
+                message="FIELDS CANNOT BE EMPTY!"
+            )
+            return
+
+        web_name = web_name.title()
+
+        account_email = for_user.lower()
+        user_data_file = os.path.join(USERS_FOLDER, account_email, "user_data.json")
+        user_key_file = os.path.join(USERS_FOLDER, account_email, "user_key.key")
+
+        # Getting the user's data and the key
+        with open(user_data_file, "r") as data_file:
+            data = json.load(data_file)
+
+        with open(user_key_file, "rb") as key_file:
+            user_key = key_file.read()
+
+        encrypted_password = encrypt_password(password, user_key)
+
+        # If the user has never saved a password before
+        if "passwords" not in data.keys():
+            data["passwords"] = {}
+
+        if web_name in data["passwords"].keys():
+            # If the website url is not present we will add it
+            if "website_url" not in data["passwords"][web_name].keys():
+                data["passwords"][web_name]["website_url"] = web_url
+            else:
+                previous_url = data["passwords"][web_name]["website_url"]
+                if previous_url.strip() == "":
+                    data["passwords"][web_name]["website_url"] = web_url
+                else:
+                    if web_url != previous_url and web_url.strip() != "":
+                        user_res_to_change_url = messagebox.askyesno(
+                            title="URL Conflict",
+                            message=f"YOU HAVE PREVIOUSLY SAVED THE URL FOR '{web_name.capitalize()}' as "
+                                    f"'{previous_url}\nDO YOU WANT TO CHANGE IT TO '{web_url}'"
+                        )
+                        if user_res_to_change_url:
+                            data["passwords"][web_name]["website_url"] = web_url
+
+            # If no password is saved for the given website
+            if "accounts" not in data["passwords"][web_name].keys():
+                data["passwords"][web_name]["accounts"] = {}
+
+            if username in data["passwords"][web_name]["accounts"].keys():
+                user_wants_to_update_password = messagebox.askyesno(
+                    title="Confirm Update",
+                    message=f"PASSWORD FOR '{web_name.upper()}',\nUSERNAME: {username} ALREADY EXISTS!\n"
+                            f"DO YOU WANT TO UPDATE IT?"
+                )
+                if not user_wants_to_update_password:
+                    return
+
+            data["passwords"][web_name]["accounts"][username] = encrypted_password
+
+        else:
+            data["passwords"][web_name] = {
+                "website_url": web_url,
+                "accounts": {
+                    username: encrypted_password,
+                }
+            }
+
+        user_confirmation = messagebox.askyesnocancel(
+            title="Confirm Details",
+            message="PLEASE CONFIRM THE FOLLOWING DETAILS:\n\n"
+                    f"WEBSITE: {web_name}\n"
+                    f"URL: {web_url}\n"
+                    f"USERNAME: {username}\n"
+                    f"PASSWORD: {password}\n\n"
+                    f"DO YOU WANT TO SAVE IT?"
+        )
+        print(f"{user_confirmation=}")
+
+        if user_confirmation:
+            with open(user_data_file, "w") as data_file:
+                json.dump(data, data_file, indent=4)
+
+            messagebox.showinfo(
+                title="Success",
+                message="PASSWORD SAVED SUCCESSFULLY!"
+            )
+            self.password_saved_successfully = True
 
     def run(self):
         self.mainloop()
