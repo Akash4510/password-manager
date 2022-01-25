@@ -112,7 +112,7 @@ class NavigationBar(Frame):
             self.menu_frame,
             text=label,
             bg=NAV_BAR_COLOR,
-            fg=COLORS["pink"] if is_active else TEXT_COLOR,
+            fg=COLORS["reddish-pink"] if is_active else TEXT_COLOR,
             font=FONT_STYLES["nav_bar"],
             borderwidth=0,
             activebackground=NAV_BAR_COLOR,
@@ -174,10 +174,10 @@ class Body(Frame):
         )
 
     @staticmethod
-    def add_inputs(input_frames: list[TwoRowsInputBox], from_row=0):
+    def add_inputs(input_frames: list[TwoRowsInputBox] | list[SingleRowInputBox], from_row=0):
         """Adds all the inputs in the body"""
         for frame in input_frames:
-            frame.grid(row=from_row, column=0, columnspan=2)
+            frame.grid(row=from_row, column=0, columnspan=2, sticky=W)
             from_row += 1
 
 
@@ -211,20 +211,6 @@ class TwoColumnBody(Body):
             parent = self.left_frame
         image_label = Label(parent, image=image, bg=BODY_COLOR)
         image_label.grid(row=0, column=0, sticky=W)
-
-
-class SingleColumnBody(Body):
-    """Single column page/body for the window"""
-
-    def __init__(self, parent, controller, **kw):
-        super().__init__(parent, controller, **kw)
-
-    @staticmethod
-    def add_inputs(input_frames: list[SingleRowInputBox], from_row=0):
-        """Adds all the inputs in the body"""
-        for frame in input_frames:
-            frame.grid(row=from_row, column=0, columnspan=2, sticky=W)
-            from_row += 1
 
 
 class Window(Frame):
