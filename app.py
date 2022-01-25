@@ -64,7 +64,7 @@ class PasswordManager(Tk):
         self.password_saved_successfully = False
 
         # Now we will create a list of all the windows for our application.
-        self.windows = [LoginWindow, SignupWindow, AboutWindow, AddWindow]
+        self.windows = [LoginWindow, SignupWindow, AboutWindow, RetrieveWindow, ResetWindow, AddWindow]
         self.frames = {}
 
         # All the windows for our application would be a class inherited from the Frame class, which will take two
@@ -96,6 +96,14 @@ class PasswordManager(Tk):
 
         if "Users" not in os.listdir(DATA_FOLDER):
             os.mkdir(USERS_FOLDER)
+
+        # Checking if the email entered is a valid email address.
+        if not valid_email(email):
+            messagebox.showerror(
+                title="Login Error",
+                message=f"PLEASE ENTER A VALID EMAIL ADDRESS!"
+            )
+            return
 
         # If the user already exists we will display the message and return from the function
         if email in os.listdir(USERS_FOLDER):
@@ -208,6 +216,7 @@ class PasswordManager(Tk):
         # If everything is correct login to the user's account
         self.show_window("AddWindow")
         self.frames["AddWindow"].logged_in_account.set(email)
+        self.frames["RetrieveWindow"].logged_in_account.set(email)
         self.frames["AddWindow"].username.set(email)
 
     def logout_of_the_account(self):
@@ -293,7 +302,6 @@ class PasswordManager(Tk):
                     f"PASSWORD: {password}\n\n"
                     f"DO YOU WANT TO SAVE IT?"
         )
-        print(f"{user_confirmation=}")
 
         if user_confirmation:
             with open(user_data_file, "w") as data_file:
@@ -304,6 +312,53 @@ class PasswordManager(Tk):
                 message="PASSWORD SAVED SUCCESSFULLY!"
             )
             self.password_saved_successfully = True
+
+    def show_reset_window(self):
+        """Shows the rest window"""
+        self.show_window("ResetWindow")
+        self.frames["ResetWindow"].show_first_page()
+
+    @staticmethod
+    def retrieve_password(for_email, website):
+        """Retrieves the password of the given website"""
+
+        if not valid_email(for_email):
+            messagebox.showerror(
+                title="Login Error",
+                message=f"PLEASE ENTER A VALID EMAIL ADDRESS!"
+            )
+            return
+
+        user_data_file = os.path.join(USERS_FOLDER, for_email, "user_data.json")
+        user_key_file = os.path.join(USERS_FOLDER, for_email, "user_key.key")
+
+        try:
+            with open(user_data_file, "r") as data_file:
+                data = json.load(data_file)
+            with open(user_key_file, "rb") as key_file:
+                user_key = key_file.read()
+
+        except FileNotFoundError:
+            messagebox.showerror(
+                title="Error",
+                message="USER ACCOUNT NOT FOUND!"
+            )
+            return
+        else:
+            try:
+                website_data = data["passwords"][website]
+            except KeyError:
+                messagebox.showerror(
+                    title="Error",
+                    message=f"NO DATA FOUND FOR THE WEBSITE: '{website}"
+                )
+                return
+            else:
+                user_password = website_data["accounts"]
+                encrypted_data = {
+                    account: decrypt_password(password, user_key) for account, password in user_password.items()
+                }
+                return encrypted_data
 
     def run(self):
         self.mainloop()
