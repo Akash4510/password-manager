@@ -1,7 +1,8 @@
 COLORS = {
     "dark_grey": "#2B2B2B",
     "white": "#FFFFFF",
-    "pink": "#F2575D",
+    "pink": "#FF4985",
+    "reddish-pink": "#F2575D",
     "darker_grey": "#242424",
 }
 
