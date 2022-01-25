@@ -84,6 +84,21 @@ class PageOne(TwoColumnBody):
         )
         show_password.grid(row=2, column=0, pady=(20, 0), sticky=W)
 
+        self.forgot_password_btn = Button(
+            self.right_frame,
+            text="Forgot Password?",
+            command=lambda: self.root_controller.show_reset_window(),
+            bg=BODY_COLOR,
+            fg=COLORS["pink"],
+            font=(MASTER_FONT, 10),
+            highlightthickness=0,
+            borderwidth=0,
+            cursor="circle",
+            activebackground=COLORS["pink"],
+            activeforeground=TEXT_COLOR,
+        )
+        self.forgot_password_btn.grid(row=2, column=1, pady=(20, 0), sticky=E)
+
         self.login_btn = MyButton(
             self.right_frame,
             text="Login",
