@@ -10,12 +10,12 @@ class AddWindow(Window):
 
         self.nav_bar.add_nav_menu(
             label="Add",
-            action=lambda: print("Hello World"),
+            action=lambda: self.controller.show_window("AddWindow"),
             is_active=True
         )
         self.nav_bar.add_nav_menu(
             label="Retrieve",
-            action=lambda: print("Hello World"),
+            action=lambda: self.controller.show_window("RetrieveWindow"),
         )
         self.nav_bar.add_nav_menu(
             label="Logout",
@@ -42,12 +42,12 @@ class AddWindow(Window):
 
         # If the user confirmed logout, then log him out of the account
         if user_response:
-            self.controller.show_window("LoginWindow")
+            self.controller.logout_of_the_account()
 
         self.body.children_frames[PageOne].website_name_entry.entry.focus_set()
 
 
-class PageOne(SingleColumnBody):
+class PageOne(Body):
 
     def __init__(self, parent, controller, **kw):
         super().__init__(parent, controller, **kw)
@@ -56,7 +56,7 @@ class PageOne(SingleColumnBody):
 
         self.website_name_entry = SingleRowInputBox(
             self,
-            label="Website Name:",
+            label="Website / Application name:",
             var=self.parent_window.website_name
         )
         self.website_url_entry = SingleRowInputBox(
@@ -80,7 +80,7 @@ class PageOne(SingleColumnBody):
             from_row=1
         )
 
-        self.website_name_entry.entry.config(width=45)
+        self.website_name_entry.entry.config(width=32)
         self.website_url_entry.entry.config(width=37)
         self.username_entry.entry.config(width=49)
         self.password_entry.entry.config(width=32)
@@ -126,8 +126,12 @@ class PageOne(SingleColumnBody):
             for_user=user_email, web_name=web_name, web_url=web_url, username=username, password=password
         )
 
+        # If the user saved a password successfully
         if self.root_controller.password_saved_successfully:
             self.parent_window.website_name.set("")
             self.parent_window.website_url.set("")
             self.parent_window.username.set(user_email)
             self.parent_window.password.set("")
+
+            # Resetting the variable
+            self.root_controller.password_saved_successfully = False
