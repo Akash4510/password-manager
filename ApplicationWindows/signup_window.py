@@ -68,7 +68,7 @@ class SignupWindow(Window):
         self.password.set("")
         self.confirm_password.set("")
 
-        self.show_page(PageOne)
+        self.show_page("PageOne")
         self.controller.show_window("LoginWindow")
 
 
@@ -77,7 +77,7 @@ class PageOne(TwoColumnBody):
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
 
-        self.add_image(self.root_controller.signup_window_image)
+        self.add_image(self.root_controller.images["signup_window"]["page_one"])
 
         self.first_name_input = TwoRowsInputBox(
             self.right_frame,
@@ -124,7 +124,7 @@ class PageOne(TwoColumnBody):
             )
             return
 
-        self.parent_window.show_page(PageTwo)
+        self.parent_window.show_page("PageTwo")
 
 
 class PageTwo(TwoColumnBody):
@@ -132,7 +132,7 @@ class PageTwo(TwoColumnBody):
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
 
-        self.add_image(self.root_controller.signup_window_image)
+        self.add_image(self.root_controller.images["signup_window"]["page_two"])
 
         self.password_input = TwoRowsInputBox(
             self.right_frame,
@@ -153,7 +153,7 @@ class PageTwo(TwoColumnBody):
             self.right_frame,
             text="Go back",
             width=12,
-            command=lambda: self.controller.show_frame(PageOne)
+            command=lambda: self.controller.show_frame("PageOne")
         )
         self.previous_btn.grid(row=2, column=0, columnspan=1, sticky=W, pady=(30, 0))
         self.previous_btn.config(style=None)
@@ -170,4 +170,3 @@ class PageTwo(TwoColumnBody):
 
         self.password_input.entry.bind("<Return>", lambda e: self.cnf_pass_input.entry.focus_set())
         self.cnf_pass_input.entry.bind("<Return>", lambda e: self.parent_window.signup_user())
-

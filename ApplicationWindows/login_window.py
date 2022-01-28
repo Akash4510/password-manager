@@ -30,7 +30,7 @@ class LoginWindow(Window):
         # Adding the page to the body
         self.add_pages(PageOne)
 
-        self.show_page(PageOne)
+        self.show_page("PageOne")
 
     def login_to_account(self):
         """Log in to the account"""
@@ -59,7 +59,7 @@ class PageOne(TwoColumnBody):
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
 
-        self.add_image(self.root_controller.login_window_image)
+        self.add_image(self.root_controller.images["login_window"]["page_one"])
 
         self.email_input = TwoRowsInputBox(
             self.right_frame,
@@ -87,7 +87,7 @@ class PageOne(TwoColumnBody):
         self.forgot_password_btn = Button(
             self.right_frame,
             text="Forgot Password?",
-            command=lambda: self.root_controller.show_reset_window(),
+            command=lambda: self.root_controller.show_window("ResetWindow"),
             bg=BODY_COLOR,
             fg=COLORS["pink"],
             font=(MASTER_FONT, 10),
@@ -116,5 +116,5 @@ class PageOne(TwoColumnBody):
         value = self.show_pass_var.get()
         if value == 1:
             self.password_input.entry.config(show="")
-        elif value == 0:
+        else:
             self.password_input.entry.config(show="*")

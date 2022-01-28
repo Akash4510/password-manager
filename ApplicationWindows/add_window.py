@@ -23,6 +23,7 @@ class AddWindow(Window):
         )
 
         self.logged_in_account = StringVar()
+        self.password_saved_successfully = False
 
         self.website_name = StringVar()
         self.website_url = StringVar()
@@ -43,8 +44,6 @@ class AddWindow(Window):
         # If the user confirmed logout, then log him out of the account
         if user_response:
             self.controller.logout_of_the_account()
-
-        self.body.children_frames[PageOne].website_name_entry.entry.focus_set()
 
 
 class PageOne(Body):
@@ -115,6 +114,14 @@ class PageOne(Body):
         username = self.parent_window.username.get()
         password = self.parent_window.password.get()
 
+        if user_email is None:
+            messagebox.showerror(
+                title="Error",
+                message="SOME FISHY LOGIN ACTIVITY DETECTED!\nLOGOUT FROM YOUR ACCOUNT AND LOGIN AGAIN TO CONTINUE"
+                        "SAVING PASSWORDS!"
+            )
+            return
+
         if web_name.strip() == "" or username.strip() == "" or password.strip() == "":
             messagebox.showerror(
                 title="Error!",
@@ -127,11 +134,12 @@ class PageOne(Body):
         )
 
         # If the user saved a password successfully
-        if self.root_controller.password_saved_successfully:
+        if self.parent_window.password_saved_successfully:\
+
             self.parent_window.website_name.set("")
             self.parent_window.website_url.set("")
             self.parent_window.username.set(user_email)
             self.parent_window.password.set("")
 
-            # Resetting the variable
-            self.root_controller.password_saved_successfully = False
+        # Resetting the variable
+        self.parent_window.password_saved_successfully = False

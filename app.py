@@ -1,6 +1,8 @@
 import os
 import os.path
 import json
+import smtplib
+import socket
 from tkinter import *
 from tkinter import ttk, messagebox
 from theme import *
@@ -12,10 +14,12 @@ USERS_FOLDER = os.path.join(DATA_FOLDER, "Users")
 
 
 class PasswordManager(Tk):
+    """Root of the application"""
 
     def __init__(self):
         Tk.__init__(self)
 
+        # Setting width and height of the application
         app_width = 850
         app_height = 570
 
@@ -51,20 +55,36 @@ class PasswordManager(Tk):
         container.grid_columnconfigure(index=0, weight=1)
 
         # Creating all the image elements
-        self.lock_icon = PhotoImage(file="Assets/Images/lock.png")
-        self.nav_bar_logo = PhotoImage(file="Assets/Logo/nav_bar_logo.png")
-        self.login_window_image = PhotoImage(file="Assets/Images/add_window.png")
-        self.signup_window_image = PhotoImage(file="Assets/Images/signup_window.png")
-        self.otp_window_image = PhotoImage(file="Assets/Images/otp_window.png")
-        self.reset_window_image = PhotoImage(file="Assets/Images/reset_window.png")
-        self.add_window_image = PhotoImage(file="Assets/Images/add_window.png")
-        self.retrieve_window_image = PhotoImage(file="Assets/Images/retrieve_window.png")
-        self.about_window_image = PhotoImage(file="Assets/Images/otp_window.png")
-
-        self.password_saved_successfully = False
+        self.images = {
+            "nav_bar_logo": PhotoImage(file="Assets/Logo/nav_bar_logo.png"),
+            "login_window": {
+                "page_one": PhotoImage(file="Assets/Images/add_window.png"),
+            },
+            "signup_window": {
+                "page_one": PhotoImage(file="Assets/Images/add_window.png"),
+                "page_two": PhotoImage(file="Assets/Images/add_window.png"),
+            },
+            "add_window": {
+                "page_one": PhotoImage(file="Assets/Images/add_window.png"),
+            },
+            "retrieve_window": {
+                "page_one": PhotoImage(file="Assets/Images/add_window.png"),
+                "page_two": PhotoImage(file="Assets/Images/add_window.png"),
+            },
+            "reset_window": {
+                "page_one": PhotoImage(file="Assets/Images/signup_window.png"),
+                "page_two": PhotoImage(file="Assets/Images/otp_window.png"),
+                "page_three": PhotoImage(file="Assets/Images/reset_window.png")
+            },
+            "about_window": {
+                "page_one": PhotoImage(file="Assets/Images/add_window.png"),
+            },
+        }
 
         # Now we will create a list of all the windows for our application.
-        self.windows = [LoginWindow, SignupWindow, AboutWindow, RetrieveWindow, ResetWindow, AddWindow]
+        self.windows = [
+            LoginWindow, SignupWindow, AboutWindow, RetrieveWindow, ResetWindow, AddWindow
+        ]
         self.frames = {}
 
         # All the windows for our application would be a class inherited from the Frame class, which will take two
@@ -76,14 +96,20 @@ class PasswordManager(Tk):
             self.frames[F.__name__] = frame
             frame.grid(row=0, column=0, sticky=NSEW)
 
-        self.frames["LoginWindow"].email.set("akash@email.com")
+        self.frames["LoginWindow"].email.set("ag308669@gmail.com")
         self.frames["LoginWindow"].password.set("Akash@1234")
         self.show_window("LoginWindow")
+
+        self.otp = IntVar()
 
     def show_window(self, window):
         """This function will display the window we want."""
         frame = self.frames[window]
         frame.tkraise()
+
+        # Always show the first page in the case of reset window
+        if window == "ResetWindow":
+            self.frames["ResetWindow"].show_page("PageOne")
 
     @staticmethod
     def create_new_account(first_name: str, last_name: str, email: str, password: str):
@@ -221,6 +247,8 @@ class PasswordManager(Tk):
 
     def logout_of_the_account(self):
         """Logs the user out of the account"""
+        self.frames["AddWindow"].logged_in_account.set(None)
+        self.frames["RetrieveWindow"].logged_in_account.set(None)
         self.show_window("LoginWindow")
 
     def add_new_password(self, for_user: str, web_name: str, web_url: str, username: str, password: str):
@@ -311,12 +339,7 @@ class PasswordManager(Tk):
                 title="Success",
                 message="PASSWORD SAVED SUCCESSFULLY!"
             )
-            self.password_saved_successfully = True
-
-    def show_reset_window(self):
-        """Shows the rest window"""
-        self.show_window("ResetWindow")
-        self.frames["ResetWindow"].show_first_page()
+            self.frames["AddWindow"].password_saved_successfully = True
 
     @staticmethod
     def retrieve_password(for_email, website):
@@ -359,6 +382,110 @@ class PasswordManager(Tk):
                     account: decrypt_password(password, user_key) for account, password in user_password.items()
                 }
                 return encrypted_data
+
+    @staticmethod
+    def registered_users():
+        return os.listdir(USERS_FOLDER)
+
+    @staticmethod
+    def send_email(to_email, message):
+        """Sends an email to the email address"""
+        # Generate a random OTP
+        my_email = os.environ.get("MyEmail")
+        my_password = os.environ.get("MyPassword")
+
+        # Sending the email to the user
+        with smtplib.SMTP("smtp.gmail.com", port=587) as connection:
+            connection.starttls()
+            connection.login(user=my_email, password=my_password)
+            connection.sendmail(
+                from_addr=my_email,
+                to_addrs=to_email,
+                msg=message
+            )
+
+    def send_otp(self, email):
+        """Sends the OTP to the user for resetting the master password"""
+        # Generate an OTP
+        otp = random.randint(100000, 999999)
+        self.otp.set(otp)
+        print(self.otp.get())
+
+        message = f"Subject:Reset MyPass Master Password\n\nThe OTP for resetting your master password for " \
+                  f"MyPass Password Manager is:\n\n{otp}\n\nPlease do not share this otp. This OTP is valid " \
+                  f"only for 10 minutes."
+
+        # Sending the OTP to the user
+        try:
+            self.send_email(email, message)
+
+        # If the user is not connected to the internet
+        except socket.gaierror:
+            messagebox.showerror(
+                title="Internet Error",
+                message="OOPS! YOUR DEVICE IS NOT CONNECTED TO THE INTERNET, PLEASE CONNECT TO THE INTERNET."
+            )
+            return
+
+        # If any other error occurred
+        except smtplib.SMTPResponseException as e:
+            error_code = e.smtp_code
+            error_message = e.smtp_error
+            print(error_code, error_message)
+            messagebox.showerror(
+                title="Error",
+                message="SORRY! WE CAN'T SEND YOU AN EMAIL AT THE MOMENT PLEASE CHECK YOUR INTERNET CONNECTION OR"
+                        "TRY AGAIN LATER."
+            )
+            return
+
+        else:
+            # This will make sure that the OTP is only valid for 10 minutes.
+            self.after(600000, lambda: self.reset_otp())
+
+    def reset_otp(self):
+        """Resets the OTP"""
+        self.otp.set(0)
+
+    def reset_master_password(self, email, new_password):
+        """Resets the master password of the user"""
+        if not valid_email(email):
+            messagebox.showerror(
+                title="Error",
+                message=f"PLEASE ENTER A VALID EMAIL ADDRESS!"
+            )
+            return
+
+        if email not in self.registered_users():
+            messagebox.showerror(
+                title="Error",
+                message=f"USER ACCOUNT NOT FOUND!"
+            )
+            return
+
+        # Path for the key file and the data file for the user.
+        key_file_path = os.path.join(USERS_FOLDER, email, f"user_key.key")
+        data_file_path = os.path.join(USERS_FOLDER, email, f"user_data.json")
+
+        # Reading the user's data and the key
+        with open(data_file_path, "r") as data_file:
+            data = json.load(data_file)
+
+        with open(key_file_path, "rb") as key_file:
+            user_key = key_file.read()
+
+        # Adding the new password
+        data["user_details"]["master_password"] = encrypt_password(new_password, user_key)
+
+        # Writing the new data to the file
+        with open(data_file_path, "w") as data_file:
+            json.dump(data, data_file, indent=4)
+
+        messagebox.showinfo(
+            title="Success",
+            message="YOUR MASTER PASSWORD HAS BEEN CHANGED SUCCESSFULLY!"
+        )
+        self.show_window("LoginWindow")
 
     def run(self):
         self.mainloop()

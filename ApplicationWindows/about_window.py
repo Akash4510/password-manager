@@ -33,5 +33,5 @@ class PageOne(TwoColumnBody):
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
 
-        self.add_image(self.root_controller.about_window_image)
+        self.add_image(self.root_controller.images["reset_window"]["page_one"])
         self.left_frame.config(pady=45)

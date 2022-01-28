@@ -75,7 +75,7 @@ class NavigationBar(Frame):
 
     def __init__(self, parent, **kw):
         super().__init__(parent, **kw)
-        self.logo = parent.controller.nav_bar_logo
+        self.logo = parent.controller.images["nav_bar_logo"]
 
         self.config(pady=15, bg=NAV_BAR_COLOR)
         self.nav_menus = []
@@ -229,12 +229,21 @@ class Window(Frame):
         self.body = BodyFrame(self)
         self.body.pack(side=TOP, fill=BOTH, expand=TRUE)
 
+        self.pages = {}
+
     def add_pages(self, *frames):
         """Adds different bodies/pages of a window in the body frame of the window"""
         for frame in frames:
             self.body.windows.append(frame)
         self.body.add_children_frames()
 
-    def show_page(self, page):
+        for frame_name in self.body.children_frames.keys():
+            self.pages[frame_name.__name__] = frame_name
+
+    def show_page(self, page: str):
         """Displays the given page"""
-        self.body.show_frame(page)
+        self.body.show_frame(self.get_page(page))
+
+    def get_page(self, page: str):
+        """Returns the give page of a window"""
+        return self.pages[page]
