@@ -49,8 +49,10 @@ class LoginWindow(Window):
         # Logging in the user
         self.controller.login_to_account(email, password)
 
-        # Resetting all the input fields to empty
-        self.email.set("")
+        # Resetting the input fields
+        if self.controller.currently_logged_in_account == NONE:
+            self.email.set("")
+            
         self.password.set("")
 
 
