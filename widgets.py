@@ -9,6 +9,7 @@ class MyLabel(ttk.Label):
     def __init__(self, parent, **kw):
         super().__init__(parent, **kw)
         self.config(
+            background=BODY_COLOR,
             foreground=TEXT_COLOR,
             font=FONT_STYLES["label"],
             justify=LEFT
@@ -45,7 +46,6 @@ class TwoRowsInputBox(Frame):
         self.label = MyLabel(
             self,
             text=label,
-            background=BODY_COLOR
         )
         self.entry = MyEntry(self, textvar=var)
 
@@ -90,13 +90,14 @@ class NavigationBar(Frame):
             image=self.logo
         )
         icon_label.grid(row=0, column=0)
+        icon_label.config(background=NAV_BAR_COLOR)
 
         title_label = MyLabel(
             self.logo_frame,
-            background=NAV_BAR_COLOR,
             text="MyPass"
         )
         title_label.grid(row=0, column=1)
+        title_label.config(background=NAV_BAR_COLOR, font=(MASTER_FONT, 14, "bold"))
 
         # Navigation menus frame
         self.menu_frame = Frame(self, bg=NAV_BAR_COLOR)
