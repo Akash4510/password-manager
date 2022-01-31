@@ -224,10 +224,10 @@ class Window(Frame):
         self.x_padding = 60
 
         self.nav_bar = NavigationBar(self, padx=self.x_padding)
-        self.nav_bar.pack(side=TOP, fill=X, expand=TRUE, anchor=N)
+        self.nav_bar.pack(side=TOP, fill=X)
 
         self.body = BodyFrame(self)
-        self.body.pack(side=TOP, fill=BOTH, expand=TRUE)
+        self.body.pack(fill=BOTH)
 
         self.pages = {}
 
