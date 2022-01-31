@@ -40,8 +40,6 @@ class RetrieveWindow(Window):
         if user_response:
             self.controller.logout_of_the_account()
 
-        self.body.children_frames[PageOne].website_name_entry.entry.focus_set()
-
     def retrieve_password(self):
         """Retrieves password"""
         website = self.website_name.get().title()
@@ -58,12 +56,10 @@ class RetrieveWindow(Window):
         if passwords is None:
             return
 
-        for account, password in passwords.items():
-            self.website_name.set(f"Website:    {website}")
-            self.username.set(f"Username:    {account}")
-            self.password.set(f"Password:    {password}")
-            self.body.children_frames[PageOne].update_labels()
-            break
+        self.body.children_frames[PageOne].website_label.config(
+            text=f"Showing password for: {website.title()}"
+        )
+        self.body.children_frames[PageOne].show_passwords(passwords)
 
 
 class PageOne(Body):
@@ -83,6 +79,7 @@ class PageOne(Body):
 
         self.search_box = MyEntry(
             self.search_frame,
+            textvar=self.parent_window.website_name
         )
         self.search_box.grid(row=1, column=0, sticky=E)
         self.search_box.config(width=66)
@@ -90,10 +87,30 @@ class PageOne(Body):
         self.search_btn = MyButton(
             self.search_frame,
             text="Search",
-            command=lambda: print("Hello World!"),
+            command=lambda: self.parent_window.retrieve_password(),
             width=14,
         )
         self.search_btn.grid(row=1, column=1, padx=(10, 0), sticky=W)
 
-        self.passwords_frame = Frame(self, bg=BODY_COLOR, )
-        self.passwords_frame.grid(row=2, column=0, pady=(0, 500))
+        self.website_label = MyLabel(self, text="Showing password for: ", font=(MASTER_FONT, 14, "bold"))
+        self.website_label.grid(row=2, column=0, sticky=W)
+
+        self.passwords_frame = Frame(self, bg=BODY_COLOR, width=500)
+        self.passwords_frame.grid(row=3, column=0, pady=(30, 500), sticky=EW)
+
+        self.account_label = MyLabel(self.passwords_frame, text="Account", background=BODY_COLOR)
+        self.password_label = MyLabel(self.passwords_frame, text="Password", background=BODY_COLOR)
+
+        self.account_label.grid(row=0, column=0, sticky=W, padx=(0, 350), pady=(0, 20))
+        self.password_label.grid(row=0, column=1, sticky=W, pady=(0, 20))
+
+    def show_passwords(self, passwords):
+        """Shows all the passwords in the passwords frame"""
+        row = 1
+        for account, password in passwords:
+            account_label = MyLabel(self.passwords_frame, text=account)
+            password_label = MyLabel(self.passwords_frame, text=password)
+
+            account_label.grid(row=row, column=0, sticky=W, pady=(5, 5))
+            password_label.grid(row=row, column=1, sticky=W, pady=(5, 5))
+            row += 1
