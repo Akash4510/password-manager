@@ -21,8 +21,6 @@ class RetrieveWindow(Window):
             action=lambda: self.logout(),
         )
 
-        self.logged_in_account = StringVar()
-
         self.website_name = StringVar()
         self.username = StringVar()
         self.password = StringVar()
@@ -47,7 +45,7 @@ class RetrieveWindow(Window):
     def retrieve_password(self):
         """Retrieves password"""
         website = self.website_name.get().title()
-        user_account = self.logged_in_account.get()
+        user_account = self.controller.currently_logged_in_account.get()
 
         if website.strip() == "":
             messagebox.showerror(
@@ -73,42 +71,29 @@ class PageOne(Body):
     def __init__(self, parent, controller, **kw):
         super().__init__(parent, controller, **kw)
 
-        self.config(pady=60, padx=135)
-
         self.heading_label = MyLabel(
             self,
-            text="Enter the name of the website you want to search password for.",
+            text="Enter the name of the website:",
             background=BODY_COLOR
         )
-        self.heading_label.grid(row=0, column=0, columnspan=2, pady=(20, 20))
+        self.heading_label.grid(row=0, column=0, pady=(30, 5), sticky=W)
 
-        self.website_name_entry = TwoRowsInputBox(
-            self,
-            label="Website / Application name: ",
-            var=self.parent_window.website_name
+        self.search_frame = Frame(self, bg=BODY_COLOR)
+        self.search_frame.grid(row=1, column=0, pady=(10, 30))
+
+        self.search_box = MyEntry(
+            self.search_frame,
         )
-        self.website_name_entry.entry.config(width=64)
-
-        self.add_inputs([self.website_name_entry], from_row=1)
-
-        self.website_name_label = MyLabel(self, text="Website: ", background=BODY_COLOR)
-        self.website_name_label.grid(row=2, column=0, sticky=W, pady=(30, 0))
-
-        self.username_label = MyLabel(self, text="Username: ", background=BODY_COLOR)
-        self.username_label.grid(row=3, column=0, sticky=W, pady=(30, 0))
-
-        self.password_label = MyLabel(self, text="Password: ", background=BODY_COLOR)
-        self.password_label.grid(row=4, column=0, sticky=W, pady=(30, 0))
+        self.search_box.grid(row=1, column=0, sticky=E)
+        self.search_box.config(width=66)
 
         self.search_btn = MyButton(
-            self,
+            self.search_frame,
             text="Search",
-            command=lambda: self.parent_window.retrieve_password()
+            command=lambda: print("Hello World!"),
+            width=14,
         )
-        self.search_btn.grid(row=5, column=0, columnspan=2, pady=(30, 0))
-        self.search_btn.config(width=20)
+        self.search_btn.grid(row=1, column=1, padx=(10, 0), sticky=W)
 
-    def update_labels(self):
-        self.website_name_label.config(text=self.parent_window.website_name.get())
-        self.username_label.config(text=self.parent_window.username.get())
-        self.password_label.config(text=self.parent_window.password.get())
+        self.passwords_frame = Frame(self, bg=BODY_COLOR, )
+        self.passwords_frame.grid(row=2, column=0, pady=(0, 500))
