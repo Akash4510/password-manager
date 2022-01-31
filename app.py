@@ -20,8 +20,7 @@ class PasswordManager(Tk):
         Tk.__init__(self)
 
         # Setting width and height of the application
-        app_width = 850
-        app_height = 570
+        app_width, app_height = (850, 570)
 
         # This will give us the screen width and screen height.
         screen_width = self.winfo_screenwidth()
@@ -34,7 +33,7 @@ class PasswordManager(Tk):
         self.geometry(f"{app_width}x{app_height}+{int(x)}+{int(y)}")
         self.maxsize(width=app_width, height=app_height)
 
-        # Setting title logo and background color
+        # Setting title, logo, and background color
         self.title("MyPass - PasswordManager")
         self.wm_iconbitmap("Assets/Logo/padlock.ico")
         self.config(bg=BODY_COLOR)
@@ -44,10 +43,7 @@ class PasswordManager(Tk):
         self.call("source", "Assets/Theme/proxttk-dark.tcl")
         self.style.theme_use("proxttk-dark")
 
-        # Setting up a default x_padding for the whole application
-        self.x_padding = 60
-
-        # Now we will create a container for the frames, which itself would be a frame.
+        # Now we will create a container(frame) for all of the windows.
         container = Frame(self, width=app_width, height=app_height, bg=BODY_COLOR)
         container.pack(side=TOP, fill=BOTH, expand=TRUE)
 
@@ -91,16 +87,18 @@ class PasswordManager(Tk):
         # arguments - parent and controller. The class PasswordManager itself is the controller so we will pass "self"
         # as the controller for all our windows.
         for F in self.windows:
-            frame = F(container, self)
+            frame = F(parent=container, controller=self)
             # In the above line we passed parent as the container and self as the controller.
             self.frames[F.__name__] = frame
             frame.grid(row=0, column=0, sticky=NSEW)
 
         self.frames["LoginWindow"].email.set("ag308669@gmail.com")
-        self.frames["LoginWindow"].password.set("Akash@1234")
+        self.frames["LoginWindow"].password.set("abc@12345")
         self.show_window("LoginWindow")
 
         self.otp = IntVar()
+        self.currently_logged_in_account = StringVar()
+        self.currently_logged_in_account.set(NONE)
 
     def show_window(self, window):
         """This function will display the window we want."""
@@ -144,8 +142,8 @@ class PasswordManager(Tk):
             os.mkdir(f"{USERS_FOLDER}/{email}")
 
         # Path for the key file and the data file for the user.
-        key_file_path = os.path.join(USERS_FOLDER, email, f"user_key.key")
-        data_file_path = os.path.join(USERS_FOLDER, email, f"user_data.json")
+        data_file_path = os.path.join(USERS_FOLDER, email, "data.json")
+        key_file_path = os.path.join(USERS_FOLDER, email, "key.key")
 
         # Generating the new key for the user
         user_key = generate_new_key()
@@ -161,7 +159,7 @@ class PasswordManager(Tk):
             "user_details": {
                 "first_name": first_name.title(),
                 "last_name": last_name.title(),
-                "name": f"{first_name} {last_name}".title(),
+                "full_name": f"{first_name} {last_name}".title(),
                 "email": email,
                 "master_password": encrypted_master_password,
             }
@@ -176,8 +174,30 @@ class PasswordManager(Tk):
             title="Sign Up Successful",
             message=("YOUR ACCOUNT HAS BEEN CREATED SUCCESSFULLY.\n\n\n"
                      "YOU MUST REMEMBER YOUR MASTER PASSWORD YOU JUST CREATED TO LOGIN TO YOUR ACCOUNT. "
-                     "IN CASE YOU FORGET IT, YOU CANNOT RETRIEVE YOUR PASSWORDS")
+                     "IN CASE YOU FORGET IT, YOU CANNOT RETRIEVE YOUR PASSWORDS.")
         )
+
+    @staticmethod
+    def get_user_data(user_email):
+        """Returns the user's data"""
+        try:
+            with open(os.path.join(USERS_FOLDER, user_email, "data.json"), "r") as data_file:
+                data = json.load(data_file)
+        except FileNotFoundError:
+            return None
+        else:
+            return data
+
+    @staticmethod
+    def get_user_key(user_email):
+        """Returns the user's key"""
+        try:
+            with open(os.path.join(USERS_FOLDER, user_email, "key.key"), "rb") as key_file:
+                key = key_file.read()
+        except FileNotFoundError:
+            return None
+        else:
+            return key
 
     def login_to_account(self, email, password):
         """Login to the user's account"""
@@ -216,17 +236,11 @@ class PasswordManager(Tk):
             )
             return
 
-        # Path for the key file and the data file for the user.
-        key_file_path = os.path.join(USERS_FOLDER, email, f"user_key.key")
-        data_file_path = os.path.join(USERS_FOLDER, email, f"user_data.json")
-
         # Getting the actual master password and the key of the user
-        with open(data_file_path, "r") as data_file:
-            users_data = json.load(data_file)
-            encrypted_password = users_data["user_details"]["master_password"]
+        user_data = self.get_user_data(email)
+        user_key = self.get_user_key(email)
 
-        with open(key_file_path, "rb") as key_file:
-            user_key = key_file.read()
+        encrypted_password = user_data["user_details"]["master_password"]
 
         # Decrypting the actual password
         actual_password = decrypt_password(encrypted_password, user_key)
@@ -240,15 +254,13 @@ class PasswordManager(Tk):
             return
 
         # If everything is correct login to the user's account
+        self.currently_logged_in_account.set(email)
         self.show_window("AddWindow")
-        self.frames["AddWindow"].logged_in_account.set(email)
-        self.frames["RetrieveWindow"].logged_in_account.set(email)
         self.frames["AddWindow"].username.set(email)
 
     def logout_of_the_account(self):
         """Logs the user out of the account"""
-        self.frames["AddWindow"].logged_in_account.set(None)
-        self.frames["RetrieveWindow"].logged_in_account.set(None)
+        self.currently_logged_in_account.set(NONE)
         self.show_window("LoginWindow")
 
     def add_new_password(self, for_user: str, web_name: str, web_url: str, username: str, password: str):
@@ -264,15 +276,11 @@ class PasswordManager(Tk):
         web_name = web_name.title()
 
         account_email = for_user.lower()
-        user_data_file = os.path.join(USERS_FOLDER, account_email, "user_data.json")
-        user_key_file = os.path.join(USERS_FOLDER, account_email, "user_key.key")
 
-        # Getting the user's data and the key
-        with open(user_data_file, "r") as data_file:
-            data = json.load(data_file)
+        user_data_file = os.path.join(USERS_FOLDER, account_email, "data.json")
 
-        with open(user_key_file, "rb") as key_file:
-            user_key = key_file.read()
+        data = self.get_user_data(account_email)
+        user_key = self.get_user_key(account_email)
 
         encrypted_password = encrypt_password(password, user_key)
 
@@ -341,8 +349,7 @@ class PasswordManager(Tk):
             )
             self.frames["AddWindow"].password_saved_successfully = True
 
-    @staticmethod
-    def retrieve_password(for_email, website):
+    def retrieve_password(self, for_email, website):
         """Retrieves the password of the given website"""
 
         if not valid_email(for_email):
@@ -352,16 +359,10 @@ class PasswordManager(Tk):
             )
             return
 
-        user_data_file = os.path.join(USERS_FOLDER, for_email, "user_data.json")
-        user_key_file = os.path.join(USERS_FOLDER, for_email, "user_key.key")
+        data = self.get_user_data(for_email)
+        user_key = self.get_user_key(for_email)
 
-        try:
-            with open(user_data_file, "r") as data_file:
-                data = json.load(data_file)
-            with open(user_key_file, "rb") as key_file:
-                user_key = key_file.read()
-
-        except FileNotFoundError:
+        if (data is None) or (user_key is None):
             messagebox.showerror(
                 title="Error",
                 message="USER ACCOUNT NOT FOUND!"
@@ -373,15 +374,15 @@ class PasswordManager(Tk):
             except KeyError:
                 messagebox.showerror(
                     title="Error",
-                    message=f"NO DATA FOUND FOR THE WEBSITE: '{website}"
+                    message=f"NO DATA FOUND FOR THE WEBSITE: '{website}'"
                 )
                 return
             else:
-                user_password = website_data["accounts"]
-                encrypted_data = {
-                    account: decrypt_password(password, user_key) for account, password in user_password.items()
-                }
-                return encrypted_data
+                user_passwords = website_data["accounts"]
+                decrypted_data = [
+                    (account, decrypt_password(password, user_key)) for account, password in user_passwords.items()
+                ]
+                return decrypted_data
 
     @staticmethod
     def registered_users():
@@ -422,7 +423,7 @@ class PasswordManager(Tk):
         # If the user is not connected to the internet
         except socket.gaierror:
             messagebox.showerror(
-                title="Internet Error",
+                title="Network Error",
                 message="OOPS! YOUR DEVICE IS NOT CONNECTED TO THE INTERNET, PLEASE CONNECT TO THE INTERNET."
             )
             return
@@ -441,11 +442,7 @@ class PasswordManager(Tk):
 
         else:
             # This will make sure that the OTP is only valid for 10 minutes.
-            self.after(600000, lambda: self.reset_otp())
-
-    def reset_otp(self):
-        """Resets the OTP"""
-        self.otp.set(0)
+            self.after(600000, lambda: self.otp.set(0))
 
     def reset_master_password(self, email, new_password):
         """Resets the master password of the user"""
@@ -463,16 +460,11 @@ class PasswordManager(Tk):
             )
             return
 
-        # Path for the key file and the data file for the user.
-        key_file_path = os.path.join(USERS_FOLDER, email, f"user_key.key")
         data_file_path = os.path.join(USERS_FOLDER, email, f"user_data.json")
 
         # Reading the user's data and the key
-        with open(data_file_path, "r") as data_file:
-            data = json.load(data_file)
-
-        with open(key_file_path, "rb") as key_file:
-            user_key = key_file.read()
+        data = self.get_user_data(email)
+        user_key = self.get_user_key(email)
 
         # Adding the new password
         data["user_details"]["master_password"] = encrypt_password(new_password, user_key)
