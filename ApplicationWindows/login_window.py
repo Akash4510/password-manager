@@ -50,9 +50,10 @@ class LoginWindow(Window):
         self.controller.login_to_account(email, password)
 
         # Resetting the input fields
-        if self.controller.currently_logged_in_account == NONE:
+        logged_in_account = self.controller.currently_logged_in_account.get()
+        if logged_in_account != NONE:
             self.email.set("")
-            
+
         self.password.set("")
 
 
