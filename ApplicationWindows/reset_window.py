@@ -53,7 +53,7 @@ class PageOne(TwoColumnBody):
 
         self.email_entry = TwoRowsInputBox(
             self.right_frame,
-            label="Enter the email:",
+            label="Enter your email:",
             var=self.parent_window.account_email,
         )
         self.email_entry.entry.bind("<Return>", lambda: self.proceed_to_second_page())
