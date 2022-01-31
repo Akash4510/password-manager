@@ -54,7 +54,7 @@ class PageOne(Body):
 
         self.website_name_entry = SingleRowInputBox(
             self,
-            label="Website / App name:",
+            label="Website / Application name:",
             var=self.parent_window.website_name
         )
         self.website_url_entry = SingleRowInputBox(
@@ -78,9 +78,9 @@ class PageOne(Body):
             from_row=1
         )
 
-        self.website_name_entry.entry.config(width=55)
+        self.website_name_entry.entry.config(width=48)
         self.website_url_entry.entry.config(width=52)
-        self.username_entry.entry.config(width=65)
+        self.username_entry.entry.config(width=64)
         self.password_entry.entry.config(width=47)
 
         self.generate_password_btn = ttk.Button(
