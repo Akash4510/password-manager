@@ -384,6 +384,13 @@ class PasswordManager(Tk):
                 ]
                 return decrypted_data
 
+    def retrieve_all_passwords(self, email):
+        """Retrieves all the passwordS"""
+        data = self.get_user_data(email)
+        if data is not None:
+            return data.get("passwords", None)
+        return None
+
     @staticmethod
     def registered_users():
         return os.listdir(USERS_FOLDER)
