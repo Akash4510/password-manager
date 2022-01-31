@@ -22,7 +22,6 @@ class AddWindow(Window):
             action=lambda: self.logout(),
         )
 
-        self.logged_in_account = StringVar()
         self.password_saved_successfully = False
 
         self.website_name = StringVar()
@@ -51,16 +50,16 @@ class PageOne(Body):
     def __init__(self, parent, controller, **kw):
         super().__init__(parent, controller, **kw)
 
-        self.config(pady=120, padx=135)
+        self.config(pady=110, padx=70)
 
         self.website_name_entry = SingleRowInputBox(
             self,
-            label="Website / Application name:",
+            label="Website / App name:",
             var=self.parent_window.website_name
         )
         self.website_url_entry = SingleRowInputBox(
             self,
-            label="Website URL(optional):",
+            label="Website URL (optional):",
             var=self.parent_window.website_url
         )
         self.username_entry = SingleRowInputBox(
@@ -79,10 +78,10 @@ class PageOne(Body):
             from_row=1
         )
 
-        self.website_name_entry.entry.config(width=32)
-        self.website_url_entry.entry.config(width=37)
-        self.username_entry.entry.config(width=49)
-        self.password_entry.entry.config(width=32)
+        self.website_name_entry.entry.config(width=55)
+        self.website_url_entry.entry.config(width=52)
+        self.username_entry.entry.config(width=65)
+        self.password_entry.entry.config(width=47)
 
         self.generate_password_btn = ttk.Button(
             self,
@@ -97,7 +96,7 @@ class PageOne(Body):
             text="Save Password",
             command=lambda: self.save_password(),
         )
-        self.add_btn.grid(row=5, column=0, columnspan=2, pady=(15, 0))
+        self.add_btn.grid(row=5, column=0, columnspan=2, pady=(15, 30))
         self.add_btn.config(width=20)
 
     def show_random_password(self):
@@ -108,7 +107,7 @@ class PageOne(Body):
     def save_password(self):
         """Saves the password"""
 
-        user_email = self.parent_window.logged_in_account.get()
+        user_email = self.root_controller.currently_logged_in_account.get()
         web_name = self.parent_window.website_name.get()
         web_url = self.parent_window.website_url.get()
         username = self.parent_window.username.get()
@@ -134,7 +133,7 @@ class PageOne(Body):
         )
 
         # If the user saved a password successfully
-        if self.parent_window.password_saved_successfully:\
+        if self.parent_window.password_saved_successfully:
 
             self.parent_window.website_name.set("")
             self.parent_window.website_url.set("")
