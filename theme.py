@@ -23,7 +23,7 @@ FONT_STYLES = {
     "label": (
         MASTER_FONT,
         FONT_SIZES["label_font_size"],
-        "bold"
+        "normal"
     ),
     "input": (
         MASTER_FONT,
