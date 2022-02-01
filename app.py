@@ -54,26 +54,26 @@ class PasswordManager(Tk):
         self.images = {
             "nav_bar_logo": PhotoImage(file="Assets/Logo/nav_bar_logo.png"),
             "login_window": {
-                "page_one": PhotoImage(file="Assets/Images/add_window.png"),
+                "page_one": PhotoImage(file="Assets/Images/login_image.png"),
             },
             "signup_window": {
-                "page_one": PhotoImage(file="Assets/Images/add_window.png"),
-                "page_two": PhotoImage(file="Assets/Images/add_window.png"),
+                "page_one": PhotoImage(file="Assets/Images/login_image.png"),
+                "page_two": PhotoImage(file="Assets/Images/login_image.png"),
             },
             "add_window": {
-                "page_one": PhotoImage(file="Assets/Images/add_window.png"),
+                "page_one": PhotoImage(file="Assets/Images/login_image.png"),
             },
             "retrieve_window": {
-                "page_one": PhotoImage(file="Assets/Images/add_window.png"),
-                "page_two": PhotoImage(file="Assets/Images/add_window.png"),
+                "page_one": PhotoImage(file="Assets/Images/login_image.png"),
+                "page_two": PhotoImage(file="Assets/Images/login_image.png"),
             },
             "reset_window": {
-                "page_one": PhotoImage(file="Assets/Images/signup_window.png"),
-                "page_two": PhotoImage(file="Assets/Images/otp_window.png"),
-                "page_three": PhotoImage(file="Assets/Images/reset_window.png")
+                "page_one": PhotoImage(file="Assets/Images/signup_image.png"),
+                "page_two": PhotoImage(file="Assets/Images/otp_image.png"),
+                "page_three": PhotoImage(file="Assets/Images/reset_image.png")
             },
             "about_window": {
-                "page_one": PhotoImage(file="Assets/Images/add_window.png"),
+                "page_one": PhotoImage(file="Assets/Images/login_image.png"),
             },
         }
 
