@@ -99,6 +99,11 @@ class PageOne(Body):
         self.add_btn.grid(row=5, column=0, columnspan=2, pady=(15, 30))
         self.add_btn.config(width=20)
 
+        self.website_name_entry.entry.bind("<Return>", lambda e: self.website_url_entry.entry.focus_set())
+        self.website_url_entry.entry.bind("<Return>", lambda e: self.username_entry.entry.focus_set())
+        self.username_entry.entry.bind("<Return>", lambda e: self.password_entry.entry.focus_set())
+        self.password_entry.entry.bind("<Return>", lambda e: self.save_password())
+
     def show_random_password(self):
         """Shows a random password"""
         random_password = generate_password()
