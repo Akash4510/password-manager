@@ -95,6 +95,10 @@ class PageOne(Body):
         self.website_label = MyLabel(self, text="Showing password for: ", font=(MASTER_FONT, 14, "bold"))
         self.website_label.grid(row=2, column=0, sticky=W)
 
+        self._create_password_frame()
+
+    def _create_password_frame(self):
+        """Creates the passwords frame"""
         self.passwords_frame = Frame(self, bg=BODY_COLOR, width=500)
         self.passwords_frame.grid(row=3, column=0, pady=(30, 500), sticky=EW)
 
@@ -106,6 +110,13 @@ class PageOne(Body):
 
     def show_passwords(self, passwords):
         """Shows all the passwords in the passwords frame"""
+        # Destroying the previous password frame
+        self.passwords_frame.destroy()
+
+        # Creating the passwords frame again
+        self._create_password_frame()
+
+        # Placing all the passwords
         row = 1
         for account, password in passwords:
             account_label = MyLabel(self.passwords_frame, text=account)
